@@ -135,6 +135,20 @@ sudo apt install -y build-essential debhelper dh-python python3-all python3-setu
 
 The `.deb` will be created in `/tmp`.
 
+### Automated GitHub releases
+
+A GitHub Actions workflow (`.github/workflows/release.yml`) automatically
+builds both the RPM and DEB packages and publishes them to a GitHub release
+whenever you push a tag starting with `v`:
+
+```bash
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+After the workflow finishes, the packages will be attached to the release at
+`https://github.com/an1ndra/loq-power-manager/releases`.
+
 ## Uninstall
 
 ```bash
