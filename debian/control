@@ -1,0 +1,22 @@
+Source: loq-power-manager
+Section: utils
+Priority: optional
+Maintainer: Anindra <anindrakarmakar+git@proton.me>
+Build-Depends: debhelper (>= 12),
+               dh-python,
+               python3-all,
+               python3-setuptools
+Standards-Version: 4.6.0
+Homepage: https://github.com/an1ndra/loq-power-manager
+
+Package: loq-power-manager
+Architecture: all
+Depends: ${python3:Depends},
+         ${misc:Depends},
+         python3-pyqt6,
+         policykit-1,
+         pkexec
+Description: Power profile and battery manager for Lenovo LOQ
+ LOQ Power Manager is a small PyQt6 application for controlling power
+ profiles, battery conservation mode, and monitoring CPU/GPU temperatures
+ and fan speeds on Lenovo LOQ / IdeaPad laptops.

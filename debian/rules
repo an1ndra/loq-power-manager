@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+export PYBUILD_NAME=loq-power-manager
+
+%:
+	dh $@ --with python3 --buildsystem=pybuild
+
+override_dh_auto_install:
+	dh_auto_install
+	# Patch polkit policy to use Debian helper paths
+	sed -i 's|/usr/local/lib/loq-power-manager/helpers|/usr/lib/loq-power-manager/helpers|g' \
+	    polkit/com.anindra.loqpowermanager.policy
+	# Install helpers
+	install -Dm755 helpers/set_power_profile.sh debian/loq-power-manager/usr/lib/loq-power-manager/helpers/set_power_profile.sh
+	install -Dm755 helpers/set_battery_threshold.sh debian/loq-power-manager/usr/lib/loq-power-manager/helpers/set_battery_threshold.sh
+	install -Dm755 helpers/set_conservation_mode.sh debian/loq-power-manager/usr/lib/loq-power-manager/helpers/set_conservation_mode.sh
+	# Install polkit policy
+	install -Dm644 polkit/com.anindra.loqpowermanager.policy debian/loq-power-manager/usr/share/polkit-1/actions/com.anindra.loqpowermanager.policy
+	# Install desktop files
+	install -Dm644 loq-power-manager.desktop debian/loq-power-manager/usr/share/applications/loq-power-manager.desktop
+	install -Dm644 loq-power-manager-restore.desktop debian/loq-power-manager/usr/share/applications/loq-power-manager-restore.desktop
+	# Autostart entry
+	install -Dm644 loq-power-manager-restore.desktop debian/loq-power-manager/etc/xdg/autostart/loq-power-manager-restore.desktop

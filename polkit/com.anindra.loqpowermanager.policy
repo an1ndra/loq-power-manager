@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+
+  <vendor>LOQ Power Manager</vendor>
+  <vendor_url>https://github.com/an1ndra/loq-power-manager</vendor_url>
+
+  <action id="com.anindra.loqpowermanager.setpowerprofile">
+    <description>Set system power profile</description>
+    <message>Authentication is required to change the system power profile.</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/lib/loq-power-manager/helpers/set_power_profile.sh</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+
+  <action id="com.anindra.loqpowermanager.setbatterythreshold">
+    <description>Set battery charge threshold</description>
+    <message>Authentication is required to change the battery charge threshold.</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/lib/loq-power-manager/helpers/set_battery_threshold.sh</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+
+  <action id="com.anindra.loqpowermanager.setconservationmode">
+    <description>Set battery conservation mode</description>
+    <message>Authentication is required to change battery conservation mode.</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/lib/loq-power-manager/helpers/set_conservation_mode.sh</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+
+</policyconfig>

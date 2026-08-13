@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=LOQ Power Manager Restore
+Comment=Restore saved Lenovo power settings at login
+Exec=/usr/local/bin/loq-power-manager --restore
+Type=Application
+Categories=System;
+Terminal=false
+X-GNOME-Autostart-enabled=true
+X-KDE-autostart-phase=2

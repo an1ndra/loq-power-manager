@@ -1,0 +1,6 @@
+include README.md
+include requirements.txt
+recursive-include helpers *
+recursive-include polkit *
+include loq-power-manager.desktop
+include loq-power-manager-restore.desktop

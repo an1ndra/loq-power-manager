@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=LOQ Power Manager
+Comment=Power profile and battery manager for Lenovo LOQ
+Exec=/usr/local/bin/loq-power-manager
+Icon=battery-good
+Type=Application
+Categories=System;Settings;
+Terminal=false
+StartupNotify=true
+X-KDE-SubstituteUID=false
