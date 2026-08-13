@@ -1,5 +1,5 @@
 Name:           loq-power-manager
-Version:        0.2.0
+Version:        0.0.1
 Release:        1%{?dist}
 Summary:        Power profile and battery manager for Lenovo LOQ laptops
 
@@ -71,5 +71,5 @@ install -Dm644 %{name}-restore.desktop %{buildroot}/etc/xdg/autostart/%{name}-re
 /etc/xdg/autostart/%{name}-restore.desktop
 
 %changelog
-* Thu Aug 13 2026 Anindra <anindrakarmakar+git@proton.me> - 0.2.0-1
+* Thu Aug 13 2026 Anindra <anindrakarmakar+git@proton.me> - 0.0.1-1
 - Initial RPM package

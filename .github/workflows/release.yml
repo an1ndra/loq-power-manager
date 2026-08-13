@@ -85,8 +85,20 @@ jobs:
       - name: List release artifacts
         run: ls -lh dist/
 
+      - name: Determine prerelease
+        id: prerelease
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if [[ "$TAG" == *-pre* || "$TAG" == *-alpha* || "$TAG" == *-beta* || "$TAG" == *-rc* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+            echo "Marking $TAG as prerelease"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*
           generate_release_notes: true
+          prerelease: ${{ steps.prerelease.outputs.prerelease }}

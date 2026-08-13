@@ -4,7 +4,7 @@
 set -euo pipefail
 
 NAME="loq-power-manager"
-VERSION="0.2.0"
+VERSION="0.0.1"
 
 cd "$(dirname "$0")"
 
