@@ -4,47 +4,58 @@ A small PyQt6 desktop application for controlling power profiles, battery
 conservation mode, and monitoring sensors on Lenovo LOQ / IdeaPad laptops
 running Linux.
 
-It is similar in spirit to the Windows Lenovo Vantage / LOQ app, but built on
-top of standard Linux sysfs interfaces.
+It provides a Linux-native alternative to the Windows Lenovo Vantage / LOQ
+app by using standard kernel sysfs interfaces such as `platform_profile`,
+`conservation_mode`, and `hwmon`.
 
-## Features
+## Table of contents
 
-- **Power profiles**: switch between Silent, Balanced, Gaming, and Custom modes
-  via the ACPI `platform_profile` interface.
-- **Battery conservation mode**: toggle Lenovo `conservation_mode` to limit
-  charge to ~55–60%.
-- **Sensor monitoring**: read CPU/GPU temperatures and available fan speeds
-  from `/sys/class/hwmon`.
-- **Persistent settings**: optionally restore the last used profile and battery
-  mode at login.
-- **Packaging**: ready-to-use RPM and DEB build scripts plus a GitHub Actions
-  workflow that publishes releases automatically.
+1. [Project description](#project-description)
+2. [User guide](#user-guide)
+   - [Installation](#installation)
+   - [Running](#running)
+   - [Usage](#usage)
+   - [Restore settings at login](#restore-settings-at-login)
+3. [Developer guide](#developer-guide)
+   - [Project structure](#project-structure)
+   - [Running from source](#running-from-source)
+   - [Building packages locally](#building-packages-locally)
+   - [Contributing](#contributing)
+4. [Safety notes](#safety-notes)
+5. [Troubleshooting](#troubleshooting)
 
-## Safety design
+## 1. Project description
 
-- Only standard Linux sysfs interfaces are touched.
-- All privileged writes use `pkexec` / PolicyKit.
-- Helper scripts whitelist the exact sysfs paths they are allowed to write and
-  validate every value before writing.
-- Unsupported hardware controls are disabled automatically instead of crashing.
+LOQ Power Manager lets Linux users on compatible Lenovo hardware:
 
-## User guide
+- Switch ACPI power profiles (Silent, Balanced, Gaming, Custom).
+- Toggle battery conservation mode, which limits charge to ~55–60%.
+- Monitor CPU/GPU temperatures and any fan speeds exposed by the kernel.
+- Save preferences and restore them automatically at login.
+
+The application is intentionally limited to safe, documented sysfs interfaces.
+It does not flash firmware, use undocumented ACPI calls, or modify system files
+outside the known safe paths.
+
+## 2. User guide
 
 ### Installation
 
-#### Fedora / openSUSE / RHEL (RPM)
+#### Fedora / openSUSE / RHEL
 
-Download the latest `.rpm` from the [releases page](https://github.com/an1ndra/loq-power-manager/releases)
-and install it with `dnf`:
+Download the latest `.rpm` from the
+[releases page](https://github.com/an1ndra/loq-power-manager/releases) and
+install it:
 
 ```bash
 sudo dnf install ./loq-power-manager-*.noarch.rpm
 ```
 
-#### Debian / Ubuntu (DEB)
+#### Debian / Ubuntu
 
-Download the latest `.deb` from the [releases page](https://github.com/an1ndra/loq-power-manager/releases)
-and install it with `apt`:
+Download the latest `.deb` from the
+[releases page](https://github.com/an1ndra/loq-power-manager/releases) and
+install it:
 
 ```bash
 sudo apt install ./loq-power-manager_*_all.deb
@@ -57,8 +68,8 @@ cd loq-power-manager
 sudo ./install.sh
 ```
 
-The installer will install the application under `/usr/local`, add a desktop
-entry, and register a PolicyKit action.
+The installer places files under `/usr/local`, adds a desktop entry, and
+installs a PolicyKit action.
 
 ### Running
 
@@ -68,23 +79,22 @@ After installation, launch the app from the application menu or run:
 loq-power-manager
 ```
 
-A system tray icon is also provided.
+A system tray icon is shown while the app is running.
 
-### What to expect
+### Usage
 
-- The **Power** tab lets you select a power profile. The app automatically maps
-  friendly names (Silent, Gaming, etc.) to whatever values your firmware
-  supports.
-- The **Battery** tab shows conservation mode. If your laptop does not expose a
+- **Power tab**: select a power profile. The app maps friendly names to the
+  actual values your firmware supports (for example, "Silent" may map to
+  `low-power` or `quiet`).
+- **Battery tab**: toggle conservation mode. If your laptop does not expose a
   configurable charge threshold, the threshold control is hidden automatically.
-- The **Sensors** tab shows live CPU/GPU temperatures and any fan speeds the
-  kernel exposes.
-- The **About** tab lists the sysfs interfaces detected on your system.
+- **Sensors tab**: view CPU/GPU temperatures and available fan speeds.
+- **About tab**: see which sysfs interfaces were detected on your system.
 
 ### Restore settings at login
 
 Enable **"Restore these settings at next login"** in the Battery tab. The app
-will re-apply the saved profile and conservation mode on the next login.
+saves the current profile and conservation state and re-applies them at login.
 
 You can also trigger a restore manually:
 
@@ -92,13 +102,13 @@ You can also trigger a restore manually:
 loq-power-manager --restore
 ```
 
-## Developer guide
+## 3. Developer guide
 
 ### Project structure
 
 ```
 loq-power-manager/
-├── loq_power_manager/        # PyQt6 application code
+├── loq_power_manager/        # PyQt6 application
 │   ├── backend.py            # sysfs detection and control
 │   ├── main.py               # GUI and system tray
 │   ├── sensors.py            # hwmon sensor reading
@@ -125,7 +135,7 @@ python3 -m loq_power_manager
 
 #### RPM
 
-On a Fedora/RHEL system:
+On Fedora or RHEL:
 
 ```bash
 cd loq-power-manager
@@ -137,7 +147,7 @@ The RPM is placed in `~/rpmbuild/RPMS/noarch/`.
 
 #### DEB
 
-On a Debian/Ubuntu system:
+On Debian or Ubuntu:
 
 ```bash
 cd loq-power-manager
@@ -147,93 +157,54 @@ sudo apt install -y build-essential debhelper dh-python python3-all python3-setu
 
 The `.deb` is created in `/tmp`.
 
-## Release process
+### Contributing
 
-This repository uses a GitHub Actions workflow (`.github/workflows/release.yml`)
-to build packages and publish releases automatically.
+Contributions are welcome. To propose a change:
 
-### Creating a normal release
-
-1. Make sure the version has been bumped in:
-   - `setup.py`
-   - `loq-power-manager.spec`
-   - `debian/changelog`
-   - `build-deb.sh` and `build-rpm.sh`
-
-2. Commit the version bump.
-
-3. Push a tag starting with `v`:
-
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature/my-change`).
+3. Make your changes and keep them focused.
+4. Run syntax checks:
    ```bash
-   git tag -a v0.1.0 -m "Release v0.1.0"
-   git push origin v0.1.0
+   bash -n helpers/*.sh build-rpm.sh build-deb.sh install.sh
+   python3 -m py_compile loq_power_manager/*.py setup.py
    ```
+5. Commit with a clear message. Signed commits are appreciated.
+6. Open a pull request against the `main` branch.
 
-4. The workflow will build the RPM and DEB packages and create a GitHub
-   release at:
-   https://github.com/an1ndra/loq-power-manager/releases
+Please keep changes minimal and follow the existing coding style.
 
-### Creating a pre-release
+## 4. Safety notes
 
-Push a tag that contains `-pre`, `-alpha`, `-beta`, or `-rc`:
+- Only standard Linux sysfs interfaces are used.
+- Privileged writes are delegated to small helper scripts that run through
+  `pkexec` / PolicyKit.
+- Helper scripts whitelist the exact sysfs paths they can touch and validate
+  every value before writing.
+- Unsupported hardware controls are disabled automatically.
+- This tool is provided as-is. Inspect the helper scripts in `helpers/` if you
+  are unsure about any operation.
 
-```bash
-git tag -a v0.1.0-pre1 -m "Pre-release v0.1.0-pre1"
-git push origin v0.1.0-pre1
-```
-
-The workflow will automatically mark the GitHub release as a **pre-release**.
-
-### Manual release trigger
-
-You can also trigger the workflow manually from the GitHub Actions tab:
-https://github.com/an1ndra/loq-power-manager/actions
-
-## Uninstall
-
-### RPM
-
-```bash
-sudo dnf remove loq-power-manager
-```
-
-### DEB
-
-```bash
-sudo apt remove loq-power-manager
-```
-
-### Manual install
-
-If you used `./install.sh`:
-
-```bash
-sudo rm -rf /usr/local/lib/loq-power-manager
-sudo rm -f /usr/local/bin/loq-power-manager
-sudo rm -f /usr/local/share/applications/loq-power-manager*.desktop
-sudo rm -f /usr/local/share/polkit-1/actions/com.anindra.loqpowermanager.policy
-rm -f ~/.config/autostart/loq-power-manager-restore.desktop
-```
-
-## Troubleshooting
+## 5. Troubleshooting
 
 ### No fan speed shown
 
-Not all Lenovo laptops expose fan speed sensors through `/sys/class/hwmon`. If
-no fan inputs are present, the Sensors tab will show "Not available". For fan
-control and monitoring on supported Legion/LOQ models, see the community
-project [LenovoLegionLinux](https://github.com/johnfanv2/LenovoLegionLinux).
+Fan speed monitoring depends on the kernel exposing fan sensors through
+`/sys/class/hwmon`. Many LOQ laptops do not expose both fans (or any fan) this
+way. For fan control and monitoring on supported Legion/LOQ models, see the
+community project [LenovoLegionLinux](https://github.com/johnfanv2/LenovoLegionLinux).
 
 ### Battery charge threshold is unavailable
 
-Some LOQ/IdeaPad firmware only exposes a binary conservation mode and not a
-configurable charge threshold. In that case, the threshold control is hidden and
-conservation mode is the only battery protection available from Linux.
+Some Lenovo firmware only provides a binary conservation mode and not a
+user-configurable charge threshold. In that case, the threshold control is
+hidden and conservation mode is the only battery protection available from
+Linux.
 
-### pkexec password prompt appears every time
+### pkexec password prompt every time
 
-The PolicyKit action is configured to ask for the administrator password. To
-allow passwordless operation for the active user, edit:
+The PolicyKit action asks for the administrator password by default. To allow
+passwordless operation, edit:
 
 ```
 /usr/share/polkit-1/actions/com.anindra.loqpowermanager.policy
@@ -241,6 +212,12 @@ allow passwordless operation for the active user, edit:
 
 and change `auth_admin_keep` to `yes` for the desired actions. Only do this on
 single-user machines.
+
+### Power profile fails to apply
+
+If a profile such as "Custom" is rejected by the kernel, the app will disable
+that button. This usually means the firmware lists the profile as supported but
+requires additional setup that is not exposed through sysfs.
 
 ## License
 
